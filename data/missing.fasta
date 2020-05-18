@@ -1,0 +1,15 @@
+>1_leadtrail
+--23456---
+>2_inner
+01----6789
+>3_even
+-1-3-5-7-9
+>4_innerblocks
+0--3-53--9
+>5_allgaps
+----------
+>6_mixed
+?N-34-6?N-
+>7_empty
+>8_nogaps
+0123456789
