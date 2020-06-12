@@ -203,7 +203,7 @@
 
        CREATED: Thu 14 maj 2020 16:27:24
 
-      REVISION: Mon 18 maj 2020 17:07:22
+      REVISION: Fri 12 jun 2020 17:53:53
 
        LICENSE: Copyright (c) 2019-2020 Johan Nylander
 
@@ -588,8 +588,8 @@ while (my $file = shift(@ARGV)) {
                             $lratio, $Ntrail, $tratio, $sumlt,
                             $sumltratio, $Ninner, $iratio, $file);
 
-            printf STDOUT "%s\t%d\t%d\t%.2f\t%d\t%.2f\t" .
-                          "%d\t%.2f\t%d\t%.2f\t%d\t%.2f\t%s\n", (@print_array);
+            printf STDOUT "%s\t%d\t%d\t%.4f\t%d\t%.4f\t" .
+                          "%d\t%.4f\t%d\t%.4f\t%d\t%.4f\t%s\n", (@print_array);
         }
     }
 }
