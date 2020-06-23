@@ -155,6 +155,9 @@ See below for description.
                     -w, --wrap=<nr>
                         Wrap fasta sequence to max length <nr>. Default is 60.
 
+                    -d, --decimals=<nr>
+                        Use <nr> decimals for ratios in output. Default is 4.
+
                     --tabulate
                         Print tab-separated output (header tab sequence).
 
@@ -206,11 +209,11 @@ See below for description.
 
            COMPANY: NRM/NBIS
 
-           VERSION: 0.2b
+           VERSION: 0.2.1
 
-           CREATED: Thu 14 maj 2020 16:27:24
+           CREATED: Thu 14 May 2020 16:27:24
 
-          REVISION: Mon 18 maj 2020 17:07:22
+          REVISION: Tue 23 Jun 2020 14:51:36
 
            LICENSE: Copyright (c) 2019-2020 Johan Nylander
 

@@ -148,6 +148,9 @@
                 -w, --wrap=<nr>
                     Wrap fasta sequence to max length <nr>. Default is 60.
 
+                -d, --decimals=<nr>
+                    Use <nr> decimals for ratios in output. Default is 4.
+
                 --tabulate
                     Print tab-separated output (header tab sequence).
 
@@ -199,11 +202,11 @@
 
        COMPANY: NRM/NBIS
 
-       VERSION: 0.2b
+       VERSION: 0.2.1
 
-       CREATED: Thu 14 maj 2020 16:27:24
+       CREATED: Thu 14 May 2020 16:27:24
 
-      REVISION: Fri 12 jun 2020 17:53:53
+      REVISION: Tue 23 Jun 2020 14:51:36
 
        LICENSE: Copyright (c) 2019-2020 Johan Nylander
 
@@ -238,6 +241,7 @@ Getopt::Long::Configure("no_ignore_case", "no_auto_abbrev");
 
 my $wrap                   = 60;  # fasta seq line length
 my $missingchardef         = '-'; # default missing data symbol
+my $decimals               = 4;   # default nr of decimals in print
 my $missingchar            = q{};
 my $missing                = 0;
 my $G                      = 0;
@@ -287,6 +291,7 @@ GetOptions(
     't|replace-trailing:s'          => \$replacetrailing,
     'H|no-header'                   => \$noheader,
     'w|wrap:i'                      => \$wrap,
+    'd|decimals:i'                  => \$decimals,
     'tabulate'                      => \$tabulate,
     'verbose!'                      => \$verbose,
     'X'                             => \$X,
@@ -588,8 +593,9 @@ while (my $file = shift(@ARGV)) {
                             $lratio, $Ntrail, $tratio, $sumlt,
                             $sumltratio, $Ninner, $iratio, $file);
 
-            printf STDOUT "%s\t%d\t%d\t%.4f\t%d\t%.4f\t" .
-                          "%d\t%.4f\t%d\t%.4f\t%d\t%.4f\t%s\n", (@print_array);
+            printf STDOUT "%s\t%d\t%d\t%.${decimals}f\t%d\t%.${decimals}f\t" .
+                          "%d\t%.${decimals}f\t%d\t%.${decimals}f\t%d\t" .
+                          "%.${decimals}f\t%s\n", (@print_array);
         }
     }
 }
