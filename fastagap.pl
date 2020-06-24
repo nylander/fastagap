@@ -107,25 +107,26 @@
                     Explicitly remove empty sequences, i.e., fasta entries
                     with header only.
 
-                -PA, --remove-allp=<integer>
+                -PA, --remove-allp=<number>
                     Remove sequence if total amount of missing data exceeds
-                    <percent>. That is, allow <integer> percent missing data.
+                    <number> (in percentage). That is, allow 1 - <number>
+                    percent missing data.
 
-                -PL, --remove-leaingp=<integer>
+                -PL, --remove-leaingp=<number>
                     Remove sequence if total amount of leading missing data
-                    exceeds <integer> percent.
+                    exceeds <number> percent.
 
-                -PT, --remove-trailingp=<integer>
+                -PT, --remove-trailingp=<number>
                     Remove sequence if total amount of missing trailing data
-                    exceeds <integer> percent.
+                    exceeds <number> percent.
 
-                -PI, --remove-innerp=<integer>
+                -PI, --remove-innerp=<number>
                     Remove sequence if total amount of missing inner data 
-                    exceeds <integer> percent.
+                    exceeds <number> percent.
 
-                -PLT, --remove-leadingtrailingp=<integer>
+                -PLT, --remove-leadingtrailingp=<number>
                     Remove sequence if the sum of leading- and trailing missing
-                    data exceeds <integer> percent.
+                    data exceeds <number> percent.
 
                 -a, --replace-all=<char>
                     Replace all missing symbols with <char> in sequences.
@@ -202,11 +203,11 @@
 
        COMPANY: NRM/NBIS
 
-       VERSION: 0.2.1
+       VERSION: 0.2.2
 
        CREATED: Thu 14 May 2020 16:27:24
 
-      REVISION: Tue 23 Jun 2020 14:51:36
+      REVISION: Wed 24 Jun 2020 20:05:22
 
        LICENSE: Copyright (c) 2019-2020 Johan Nylander
 
@@ -280,11 +281,11 @@ GetOptions(
     'I|remove-inner'                => \$removeinner,
     'L|remove-leading'              => \$removeleading,
     'T|remove-trailing'             => \$removetrailing,
-    'PA|remove-allp=i'              => \$removeallp,
-    'PI|remove-innerp=i'            => \$removeinnerp,
-    'PL|remove-leadingp=i'          => \$removeleadingp,
-    'PT|remove-trailingp=i'         => \$removetrailingp,
-    'PLT|remove-leadingtrailingp=i' => \$removeleadingtrailingp,
+    'PA|remove-allp=f'              => \$removeallp,
+    'PI|remove-innerp=f'            => \$removeinnerp,
+    'PL|remove-leadingp=f'          => \$removeleadingp,
+    'PT|remove-trailingp=f'         => \$removetrailingp,
+    'PLT|remove-leadingtrailingp=f' => \$removeleadingtrailingp,
     'a|replace-all:s'               => \$replaceall,
     'i|replace-inner:s'             => \$replaceinner,
     'l|replace-leading:s'           => \$replaceleading,
