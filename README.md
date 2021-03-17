@@ -220,11 +220,11 @@ See below for description.
 
          COMPANY: NRM/NBIS
 
-         VERSION: 0.2.3
+         VERSION: 0.3.0
 
          CREATED: Thu 14 May 2020 16:27:24
 
-        REVISION: Wed 17 mar 2021 13:41:53
+        REVISION: Wed 17 mar 2021 14:23:12
 
          LICENSE: Copyright (c) 2019-2021 Johan Nylander
 
