@@ -1,4 +1,4 @@
-# FASTAGAP - report, remove, or replace missing data in fasta
+# Fastagap - Report, remove, or replace missing data in fasta
 
 Scripts for handling missing data (gaps) in fasta files.
 
