@@ -18,8 +18,11 @@
 
                 Default behaviour (no options used) is to remove all
                 occurrences of missing data represented by the symbol
-                '-' from the sequences. If an "all-gap" sequence is
-                encountered, it will be excluded from output.
+                '-' from the sequences (corresponds to using the
+                options -A and -G).
+
+                If an "all-gap" sequence is encountered, it will be
+                excluded from output.
 
                 See OPTIONS and EXAMPLES for more details.
 
@@ -35,9 +38,13 @@
 
                     $ ./fastagap.pl -c -N data/missing.fasta
 
+                Count '-' and '?' as missing data
+
+                    $ ./fastagap.pl -c -G -Q data/missing.fasta
+
                 Remove all '?'
 
-                    $ ./fastagap.pl -A -Q data/missing.fasta
+                    $ ./fastagap.pl -Q data/missing.fasta
 
                 Remove all leading and trailing missing data
 
@@ -79,7 +86,7 @@
                     to use as missing symbol. Default is '-'.
 
                 -G
-                    Set missing symbol to hyphen ('-').
+                    Set missing symbol to hyphen ('-'). (Default)
 
                 -N
                     Set missing symbol to 'N' (case sensitive).
@@ -87,12 +94,15 @@
                 -Q
                     Set missing symbol to '?'.
 
+                -X
+                    Set missing symbol to 'X'.
+
                 -H, --no-header
                     Suppress printing of header in table output (use
                     together with '-c').
 
                 -A, --remove-all
-                    Remove all missing symbols from sequences.
+                    Remove all missing symbols from sequences. (Default)
 
                 -L, --remove-leading
                     Remove all leading missing symbols from sequences.
@@ -155,8 +165,8 @@
                 --tabulate
                     Print tab-separated output (header tab sequence).
 
-                -X
-                    Shortcut for '-A -m='N|\-|\?' --noverbose'.
+                -Z
+                    Shortcut for '-A -N -Q -G -X --noverbose'.
 
                 -h
                     Show brief help info.
@@ -203,13 +213,13 @@
 
        COMPANY: NRM/NBIS
 
-       VERSION: 0.2.2
+       VERSION: 0.2.3
 
        CREATED: Thu 14 May 2020 16:27:24
 
-      REVISION: Wed 24 Jun 2020 20:05:22
+      REVISION: Wed 17 mar 2021 13:41:53
 
-       LICENSE: Copyright (c) 2019-2020 Johan Nylander
+       LICENSE: Copyright (c) 2019-2021 Johan Nylander
 
                 Permission is hereby granted, free of charge, to any person
                 obtaining a copy of this software and associated documentation
@@ -249,6 +259,7 @@ my $G                      = 0;
 my $N                      = 0;
 my $Q                      = 0;
 my $X                      = 0;
+my $Z                      = 0;
 my $count                  = 0;
 my $removep                = 0;
 my $removeall              = 0; # default if no other options
@@ -276,6 +287,7 @@ GetOptions(
     'G'                             => \$G,
     'N'                             => \$N,
     'Q'                             => \$Q,
+    'X'                             => \$X,
     'E|remove-empty'                => \$removeempty,
     'A|remove-all'                  => \$removeall,
     'I|remove-inner'                => \$removeinner,
@@ -295,7 +307,7 @@ GetOptions(
     'd|decimals:i'                  => \$decimals,
     'tabulate'                      => \$tabulate,
     'verbose!'                      => \$verbose,
-    'X'                             => \$X,
+    'Z'                             => \$Z,
     'h'    => sub { print "Usage: $0 [OPTIONS][--help] file\n"; exit(0); },
     'help' => sub { exec("perldoc", $0); exit(0); },
 ) or
@@ -309,11 +321,11 @@ if (@ARGV == 0 && -t STDIN && -t STDERR) {
 if ($missing) {
    $missingchar = '[' . $missing . ']'; # experimental
 }
-elsif ($X) {
-    $missingchar = 'N|\-|\?';
+elsif ($Z) {
+    $missingchar = 'N|\-|\?|X';
     $removeall = 1;
     $verbose = 0;
-} 
+}
 else {
     my @mc = ();
 
@@ -325,6 +337,9 @@ else {
     }
     if ($Q) {
         push @mc, '\?';
+    }
+    if ($X) {
+        push @mc, 'X';
     }
 
     if (@mc) {
