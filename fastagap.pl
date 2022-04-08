@@ -24,58 +24,10 @@
                 If an "all-gap" sequence is encountered, it will be
                 excluded from output.
 
+                In addition, the script can also filter sequences
+                on min and/or max lengths.
+
                 See OPTIONS and EXAMPLES for more details.
-
-     EXAMPLES:  Remove all missing data ('-')
-
-                    $ ./fastagap.pl data/missing.fasta
-
-                Count missing data
-
-                    $ ./fastagap.pl -c data/missing.fasta
-
-                Count only 'N' as missing data
-
-                    $ ./fastagap.pl -c -N data/missing.fasta
-
-                Count '-' and '?' as missing data
-
-                    $ ./fastagap.pl -c -G -Q data/missing.fasta
-
-                Remove all '?'
-
-                    $ ./fastagap.pl -Q data/missing.fasta
-
-                Remove all leading and trailing missing data
-
-                    $ ./fastagap.pl -L -T data/missing.fasta
-
-                Replace leading and trailing missing data with 'N'
-
-                    $ ./fastagap.pl -l=N -t=N data/missing.fasta
-
-                Replace leading, trailing, and inner missing data
-
-                    $ ./fastagap.pl -l=l -t=t -i=i data/missing.fasta
-
-                Remove leading and trailing, and replace inner
-                missing data
-
-                    $ ./fastagap.pl -L -T -i=N  data/missing.fasta
-
-                Remove sequence if total amount of missing data
-                exceeds 30 percent
-
-                    $ ./fastagap.pl -PA=30 data/missing.fasta
-
-                Remove sequence if amount of leading- and trailing
-                missing data exceeds 30 percent
-
-                    $ ./fastagap.pl -PLT=30 data/missing.fasta
-
-                Convert fasta to tab-separated output
-
-                    $ ./fastagap.pl -tabulate data/missing.fasta
 
        OPTIONS:
                 -c, --count
@@ -162,6 +114,16 @@
                 -d, --decimals=<nr>
                     Use <nr> decimals for ratios in output. Default is 4.
 
+                -MIN=<nr>
+                    Print sequence if (unfiltered) length is minimum <nr> 
+                    positions. This option can not be combined with the
+                    removal options.
+
+                -MAX=<nr>
+                    Print sequence if (unfiltered) length is maximun <nr>
+                    positions.  This option can not be combined with the
+                    removal options.
+
                 --tabulate
                     Print tab-separated output (header tab sequence).
 
@@ -173,6 +135,68 @@
 
                 --help
                     Show more help info.
+
+
+     EXAMPLES:  Remove all missing data ('-')
+
+                    $ ./fastagap.pl data/missing.fasta
+
+                Count missing data
+
+                    $ ./fastagap.pl -c data/missing.fasta
+
+                Count only 'N' as missing data
+
+                    $ ./fastagap.pl -c -N data/missing.fasta
+
+                Count '-' and '?' as missing data
+
+                    $ ./fastagap.pl -c -G -Q data/missing.fasta
+
+                Remove all '?'
+
+                    $ ./fastagap.pl -Q data/missing.fasta
+
+                Remove all leading and trailing missing data
+
+                    $ ./fastagap.pl -L -T data/missing.fasta
+
+                Replace leading and trailing missing data with 'N'
+
+                    $ ./fastagap.pl -l=N -t=N data/missing.fasta
+
+                Replace leading, trailing, and inner missing data
+
+                    $ ./fastagap.pl -l=l -t=t -i=i data/missing.fasta
+
+                Remove leading and trailing, and replace inner
+                missing data
+
+                    $ ./fastagap.pl -L -T -i=N  data/missing.fasta
+
+                Remove sequence if total amount of missing data
+                exceeds 30 percent
+
+                    $ ./fastagap.pl -PA=30 data/missing.fasta
+
+                Remove sequence if amount of leading- and trailing
+                missing data exceeds 30 percent
+
+                    $ ./fastagap.pl -PLT=30 data/missing.fasta
+
+                Remove sequence if (unfiltered) length is less than
+                5 positions
+
+                    $ ./fastagap.pl -MIN=5 data/length.fasta
+
+                Remove sequence if (unfiltered) length is less than
+                5 positions, and not longer than 10 positions
+
+                    $ ./fastagap.pl -MIN=5 -MAX=10 data/length.fasta
+
+                Convert fasta to tab-separated output
+
+                    $ ./fastagap.pl -tabulate data/missing.fasta
 
   REQUIREMENTS: Perl, and perldoc (for --help)
 
@@ -213,13 +237,13 @@
 
        COMPANY: NRM/NBIS
 
-       VERSION: 0.3.0
+       VERSION: 0.4.0
 
        CREATED: Thu 14 May 2020 16:27:24
 
-      REVISION: Wed 17 mar 2021 14:23:12
+      REVISION: fre  8 apr 2022 18:12:12
 
-       LICENSE: Copyright (c) 2019-2021 Johan Nylander
+       LICENSE: Copyright (c) 2019-2022 Johan Nylander
 
                 Permission is hereby granted, free of charge, to any person
                 obtaining a copy of this software and associated documentation
@@ -253,6 +277,8 @@ Getopt::Long::Configure("no_ignore_case", "no_auto_abbrev");
 my $wrap                   = 60;  # fasta seq line length
 my $missingchardef         = '-'; # default missing data symbol
 my $decimals               = 4;   # default nr of decimals in print
+my $min                    = 0;
+my $max                    = q{};
 my $missingchar            = q{};
 my $missing                = 0;
 my $G                      = 0;
@@ -298,6 +324,8 @@ GetOptions(
     'PL|remove-leadingp=f'          => \$removeleadingp,
     'PT|remove-trailingp=f'         => \$removetrailingp,
     'PLT|remove-leadingtrailingp=f' => \$removeleadingtrailingp,
+    'MIN=i'                         => \$min,
+    'MAX=i'                         => \$max,
     'a|replace-all:s'               => \$replaceall,
     'i|replace-inner:s'             => \$replaceinner,
     'l|replace-leading:s'           => \$replaceleading,
@@ -384,6 +412,8 @@ while (my $file = shift(@ARGV)) {
         next if ($_ eq '');
 
         my $seqlength = 0;
+        my $seqlength_unfiltered = 0;
+        my $do_length_print = 0;
         my $nleading = 0;
         my $ntrailing = 0;
         my $ninner = 0;
@@ -396,165 +426,205 @@ while (my $file = shift(@ARGV)) {
         my @sequencelines = ();
 
         ($header, @sequencelines) = split /\n/;
-        push @fastaheaders, $header;
 
         foreach my $line (@sequencelines) {
             $sequence .= $line;
         }
 
-        $nmissing = () = $sequence =~ /$missingchar/g;
-        $missing_HoH{$file}{$header} = $nmissing;
-
-        $seqlength = length($sequence);
-        $length_HoH{$file}{$header} = $seqlength;
-
-        if ($sequence =~ /^(${missingchar}+)/) {
-            $nleading = length($1);
-        }
-        $leading_HoH{$file}{$header} = $nleading;
-
-        if ($sequence =~ /(${missingchar}+$)/) {
-            $ntrailing = length($1);
-        }
-        $trailing_HoH{$file}{$header} = $ntrailing;
-
-        my $len = $seqlength - $nleading - $ntrailing;
-        $inseq = substr($sequence, $nleading, $len);
-
-        if (($nleading == $seqlength) or ($ntrailing == $seqlength)) {
-            $ninner = 0;
-        }
-        else {
-            $ninner = $nmissing - ($nleading + $ntrailing);
-        }
-        $inner_HoH{$file}{$header} = $ninner;
-
-        if (any { $_ > '0' } @dop) {
-            if ($removeallp) {
-                $removep = $removeallp;
-                $ngapsallowed = ($removep/100.0) * $seqlength;
-            }
-            elsif ($removeleadingp) {
-                $removep = $removeleadingp;
-                $nmissing = $nleading;
-                $ngapsallowed = ($removep/100.0) * $seqlength;
-            }
-            elsif ($removetrailingp) {
-                $removep = $removetrailingp;
-                $nmissing = $ntrailing;
-                $ngapsallowed = ($removep/100.0) * $seqlength;
-            }
-            elsif ($removeinnerp) {
-                $removep = $removeinnerp;
-                $nmissing = $ninner;
-                $ngapsallowed = ($removep/100.0) * $seqlength;
-            }
-            elsif ($removeleadingtrailingp) {
-                $removep = $removeleadingtrailingp;
-                $nmissing = $nleading + $ntrailing;
-                $ngapsallowed = ($removep/100.0) * $seqlength;
-            }
-        }
-        else {
-            $ngapsallowed = $seqlength - 1;
-        }
-
-        if (! $count) {
-            if ($replaceall) {
-                $sequence =~ s/$missingchar/$replaceall/g;
-            }
-
-            if ($replaceleading) {
-                my $lN = $replaceleading x $nleading;
-                if ($nleading == $seqlength) {
-                    if ($verbose) {
-                        print STDERR "$0 Warning: found sequence with no data." .
-                        " Will not replace leading from \'$header\'" .
-                        " (file \'$file\')\n";
+        if ($min || $max) { # if MIN and/or MAX args, don't filter
+            $seqlength_unfiltered = length($sequence);
+            if ($min > 0) { # We cannot use '>' below if min is 0
+                if ($seqlength_unfiltered >= $min) {
+                    if ($max) {
+                        if ($seqlength_unfiltered <= $max) {
+                            $do_length_print = 1;
+                        }
                     }
-                }
-                else {
-                    substr($sequence, 0, $nleading, $lN);
-                }
-            }
-
-            if ($replacetrailing) {
-                if ($ntrailing == $seqlength) {
-                    if ($verbose) {
-                        print STDERR "$0 Warning: found sequence with no data." .
-                        " Will not replace trailing from \'$header\'" .
-                        " (file \'$file\')\n";
+                    else {
+                        $do_length_print = 1;
                     }
-                }
-                else {
-                    my $tN = $replacetrailing  x $ntrailing;
-                    substr($sequence, -$ntrailing, $ntrailing, $tN);
-                }
-            }
-
-            if ($replaceinner) {
-                $inseq =~ s/$missingchar/$replaceinner/g;
-                my $inseqlen = length($inseq);
-                substr($sequence, $nleading, $inseqlen) = $inseq;
-            }
-
-            if ($removeleading) {
-                if ($nleading == $seqlength) {
-                    if ($verbose) {
-                        print STDERR "$0 Warning: found sequence with no data." .
-                        " Will not remove leading from \'$header\'" .
-                        " (file \'$file\')\n";
-                    }
-                }
-                else {
-                    substr($sequence, 0, $nleading, q{});
-                }
-            }
-
-            if ($removetrailing) {
-                if ($ntrailing == $seqlength) {
-                    if ($verbose) {
-                        print STDERR "$0 Warning: found sequence with no data." .
-                        " Will not remove trailing from \'$header\'" .
-                        " (file \'$file\')\n";
-                    }
-                }
-                else {
-                    substr($sequence, -$ntrailing, $ntrailing, q{});
-                }
-            }
-
-            if ($removeinner) {
-                $inseq =~ s/$missingchar//g;
-                my $inseqlen = length($inseq);
-                substr($sequence, $nleading, $inseqlen) = $inseq;
-            }
-
-            if ($removeall) {
-                $sequence =~ s/$missingchar//g;
-            }
-
-            if (length($sequence) < 1) {
-                if ($verbose) {
-                    print STDERR "$0 Warning: found sequence with no data." .
-                    " Removing \'$header\' (file \'$file\') from output.\n";
                 }
             }
             else {
-                if ($nmissing > $ngapsallowed) {
+                if ($seqlength_unfiltered > $min) {
+                    if ($max) {
+                        if ($seqlength_unfiltered <= $max) {
+                            $do_length_print = 1;
+                        }
+                    }
+                    else {
+                        $do_length_print = 1;
+                    }
+                }
+            }
+            if ($do_length_print) {
+                if ($tabulate) {
+                    print STDOUT $header, "\t", $sequence, "\n";
+                }
+                else {
+                    $sequence =~ s/\S{$wrap}/$&\n/g;
+                    print STDOUT ">", $header, "\n";
+                    print STDOUT $sequence, "\n";
+                }
+            }
+        }
+        else {
+            push @fastaheaders, $header;
+
+            $nmissing = () = $sequence =~ /$missingchar/g;
+            $missing_HoH{$file}{$header} = $nmissing;
+
+            $seqlength = length($sequence);
+            $length_HoH{$file}{$header} = $seqlength;
+
+            if ($sequence =~ /^(${missingchar}+)/) {
+                $nleading = length($1);
+            }
+            $leading_HoH{$file}{$header} = $nleading;
+
+            if ($sequence =~ /(${missingchar}+$)/) {
+                $ntrailing = length($1);
+            }
+            $trailing_HoH{$file}{$header} = $ntrailing;
+
+            my $len = $seqlength - $nleading - $ntrailing;
+            $inseq = substr($sequence, $nleading, $len);
+
+            if (($nleading == $seqlength) or ($ntrailing == $seqlength)) {
+                $ninner = 0;
+            }
+            else {
+                $ninner = $nmissing - ($nleading + $ntrailing);
+            }
+            $inner_HoH{$file}{$header} = $ninner;
+
+            if (any { $_ > '0' } @dop) {
+                if ($removeallp) {
+                    $removep = $removeallp;
+                    $ngapsallowed = ($removep/100.0) * $seqlength;
+                }
+                elsif ($removeleadingp) {
+                    $removep = $removeleadingp;
+                    $nmissing = $nleading;
+                    $ngapsallowed = ($removep/100.0) * $seqlength;
+                }
+                elsif ($removetrailingp) {
+                    $removep = $removetrailingp;
+                    $nmissing = $ntrailing;
+                    $ngapsallowed = ($removep/100.0) * $seqlength;
+                }
+                elsif ($removeinnerp) {
+                    $removep = $removeinnerp;
+                    $nmissing = $ninner;
+                    $ngapsallowed = ($removep/100.0) * $seqlength;
+                }
+                elsif ($removeleadingtrailingp) {
+                    $removep = $removeleadingtrailingp;
+                    $nmissing = $nleading + $ntrailing;
+                    $ngapsallowed = ($removep/100.0) * $seqlength;
+                }
+            }
+            else {
+                $ngapsallowed = $seqlength - 1;
+            }
+
+            if (! $count) {
+                if ($replaceall) {
+                    $sequence =~ s/$missingchar/$replaceall/g;
+                }
+
+                if ($replaceleading) {
+                    my $lN = $replaceleading x $nleading;
+                    if ($nleading == $seqlength) {
+                        if ($verbose) {
+                            print STDERR "$0 Warning: found sequence with no data." .
+                            " Will not replace leading from \'$header\'" .
+                            " (file \'$file\')\n";
+                        }
+                    }
+                    else {
+                        substr($sequence, 0, $nleading, $lN);
+                    }
+                }
+
+                if ($replacetrailing) {
+                    if ($ntrailing == $seqlength) {
+                        if ($verbose) {
+                            print STDERR "$0 Warning: found sequence with no data." .
+                            " Will not replace trailing from \'$header\'" .
+                            " (file \'$file\')\n";
+                        }
+                    }
+                    else {
+                        my $tN = $replacetrailing  x $ntrailing;
+                        substr($sequence, -$ntrailing, $ntrailing, $tN);
+                    }
+                }
+
+                if ($replaceinner) {
+                    $inseq =~ s/$missingchar/$replaceinner/g;
+                    my $inseqlen = length($inseq);
+                    substr($sequence, $nleading, $inseqlen) = $inseq;
+                }
+
+                if ($removeleading) {
+                    if ($nleading == $seqlength) {
+                        if ($verbose) {
+                            print STDERR "$0 Warning: found sequence with no data." .
+                            " Will not remove leading from \'$header\'" .
+                            " (file \'$file\')\n";
+                        }
+                    }
+                    else {
+                        substr($sequence, 0, $nleading, q{});
+                    }
+                }
+
+                if ($removetrailing) {
+                    if ($ntrailing == $seqlength) {
+                        if ($verbose) {
+                            print STDERR "$0 Warning: found sequence with no data." .
+                            " Will not remove trailing from \'$header\'" .
+                            " (file \'$file\')\n";
+                        }
+                    }
+                    else {
+                        substr($sequence, -$ntrailing, $ntrailing, q{});
+                    }
+                }
+
+                if ($removeinner) {
+                    $inseq =~ s/$missingchar//g;
+                    my $inseqlen = length($inseq);
+                    substr($sequence, $nleading, $inseqlen) = $inseq;
+                }
+
+                if ($removeall) {
+                    $sequence =~ s/$missingchar//g;
+                }
+
+                if (length($sequence) < 1) {
                     if ($verbose) {
-                        print STDERR "$0 Warning: missing data > $removep\%." .
+                        print STDERR "$0 Warning: found sequence with no data." .
                         " Removing \'$header\' (file \'$file\') from output.\n";
                     }
                 }
                 else {
-                    if ($tabulate) {
-                        print STDOUT $header, "\t", $sequence, "\n";
+                    if ($nmissing > $ngapsallowed) {
+                        if ($verbose) {
+                            print STDERR "$0 Warning: missing data > $removep\%." .
+                            " Removing \'$header\' (file \'$file\') from output.\n";
+                        }
                     }
                     else {
-                        $sequence =~ s/\S{$wrap}/$&\n/g;
-                        print STDOUT ">", $header, "\n";
-                        print STDOUT $sequence, "\n";
+                        if ($tabulate) {
+                            print STDOUT $header, "\t", $sequence, "\n";
+                        }
+                        else {
+                            $sequence =~ s/\S{$wrap}/$&\n/g;
+                            print STDOUT ">", $header, "\n";
+                            print STDOUT $sequence, "\n";
+                        }
                     }
                 }
             }

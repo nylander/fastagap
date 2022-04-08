@@ -31,58 +31,10 @@ See below for description.
                   If an "all-gap" sequence is encountered, it will be
                   excluded from output.
 
+                  In addition, the script can also filter sequences
+                  on min and/or max lengths.
+
                   See OPTIONS and EXAMPLES for more details.
-
-       EXAMPLES:  Remove all missing data ('-')
-
-                      $ ./fastagap.pl data/missing.fasta
-
-                  Count missing data
-
-                      $ ./fastagap.pl -c data/missing.fasta
-
-                  Count only 'N' as missing data
-
-                      $ ./fastagap.pl -c -N data/missing.fasta
-
-                  Count only '-' and '?' as missing data
-
-                      $ ./fastagap.pl -c -G -Q data/missing.fasta
-
-                  Remove all '?'
-
-                      $ ./fastagap.pl -A -Q data/missing.fasta
-
-                  Remove all leading and trailing missing data
-
-                      $ ./fastagap.pl -L -T data/missing.fasta
-
-                  Replace leading and trailing missing data with 'N'
-
-                      $ ./fastagap.pl -l=N -t=N data/missing.fasta
-
-                  Replace leading, trailing, and inner missing data
-
-                      $ ./fastagap.pl -l=l -t=t -i=i data/missing.fasta
-
-                  Remove leading and trailing, and replace inner
-                  missing data
-
-                      $ ./fastagap.pl -L -T -i=N  data/missing.fasta
-
-                  Remove sequence if total amount of missing data
-                  exceeds 30 percent
-
-                      $ ./fastagap.pl -PA=30 data/missing.fasta
-
-                  Remove sequence if amount of leading- and trailing
-                  missing data exceeds 30 percent
-
-                      $ ./fastagap.pl -PLT=30 data/missing.fasta
-
-                  Convert fasta to tab-separated output
-
-                      $ ./fastagap.pl -tabulate data/missing.fasta
 
          OPTIONS:
                   -c, --count
@@ -169,6 +121,16 @@ See below for description.
                   -d, --decimals=<nr>
                       Use <nr> decimals for ratios in output. Default is 4.
 
+                  -MIN=<nr>
+                      Print sequence if (unfiltered) length is minimum <nr> 
+                      positions. This option can not be combined with the
+                      removal options.
+
+                  -MAX=<nr>
+                      Print sequence if (unfiltered) length is maximun <nr>
+                      positions.  This option can not be combined with the
+                      removal options.
+
                   --tabulate
                       Print tab-separated output (header tab sequence).
 
@@ -180,6 +142,68 @@ See below for description.
 
                   --help
                       Show more help info.
+
+
+       EXAMPLES:  Remove all missing data ('-')
+
+                      $ ./fastagap.pl data/missing.fasta
+
+                  Count missing data
+
+                      $ ./fastagap.pl -c data/missing.fasta
+
+                  Count only 'N' as missing data
+
+                      $ ./fastagap.pl -c -N data/missing.fasta
+
+                  Count '-' and '?' as missing data
+
+                      $ ./fastagap.pl -c -G -Q data/missing.fasta
+
+                  Remove all '?'
+
+                      $ ./fastagap.pl -Q data/missing.fasta
+
+                  Remove all leading and trailing missing data
+
+                      $ ./fastagap.pl -L -T data/missing.fasta
+
+                  Replace leading and trailing missing data with 'N'
+
+                      $ ./fastagap.pl -l=N -t=N data/missing.fasta
+
+                  Replace leading, trailing, and inner missing data
+
+                      $ ./fastagap.pl -l=l -t=t -i=i data/missing.fasta
+
+                  Remove leading and trailing, and replace inner
+                  missing data
+
+                      $ ./fastagap.pl -L -T -i=N  data/missing.fasta
+
+                  Remove sequence if total amount of missing data
+                  exceeds 30 percent
+
+                      $ ./fastagap.pl -PA=30 data/missing.fasta
+
+                  Remove sequence if amount of leading- and trailing
+                  missing data exceeds 30 percent
+
+                      $ ./fastagap.pl -PLT=30 data/missing.fasta
+
+                  Remove sequence if (unfiltered) length is less than
+                  5 positions
+
+                      $ ./fastagap.pl -MIN=5 data/length.fasta
+
+                  Remove sequence if (unfiltered) length is less than
+                  5 positions, and not longer than 10 positions
+
+                      $ ./fastagap.pl -MIN=5 -MAX=10 data/length.fasta
+
+                  Convert fasta to tab-separated output
+
+                      $ ./fastagap.pl -tabulate data/missing.fasta
 
     REQUIREMENTS: Perl, and perldoc (for --help)
 
@@ -220,13 +244,13 @@ See below for description.
 
          COMPANY: NRM/NBIS
 
-         VERSION: 0.3.0
+         VERSION: 0.4.0
 
          CREATED: Thu 14 May 2020 16:27:24
 
-        REVISION: Wed 17 mar 2021 14:23:12
+        REVISION: fre  8 apr 2022 18:12:12
 
-         LICENSE: Copyright (c) 2019-2021 Johan Nylander
+         LICENSE: Copyright (c) 2019-2022 Johan Nylander
 
                   Permission is hereby granted, free of charge, to any person
                   obtaining a copy of this software and associated documentation
@@ -291,7 +315,7 @@ See below for description.
 
          REVISION: fre 15 maj 2020 13:06:49
 
-          LICENSE: Copyright (c) 2019-2020 Johan Nylander
+          LICENSE: Copyright (c) 2019-2022 Johan Nylander
 
                    Permission is hereby granted, free of charge, to any person
                    obtaining a copy of this software and associated documentation

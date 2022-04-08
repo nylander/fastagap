@@ -40,9 +40,9 @@
 
       CREATED: 02/22/2010 07:12:32 PM CET
 
-     REVISION: fre 15 maj 2020 13:06:49 
+     REVISION: fre  8 apr 2022 18:23:59
 
-       LICENSE: Copyright (c) 2019-2020 Johan Nylander
+       LICENSE: Copyright (c) 2019-2022 Johan Nylander
 
                 Permission is hereby granted, free of charge, to any person
                 obtaining a copy of this software and associated documentation
