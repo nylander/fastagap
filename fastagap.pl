@@ -104,9 +104,12 @@
                 -i, --replace-inner=<char>
                     Replace all inner missing symbols with <char> in sequences.
 
-                -v, --verbose
+                -V, --Verbose
                     Print warnings when replacements are attempted on empty
                     sequences.
+
+                -v, --version
+                    Print version number.
 
                 -w, --wrap=<nr>
                     Wrap fasta sequence to max length <nr>. Default is 60.
@@ -237,11 +240,11 @@
 
        COMPANY: NRM/NBIS
 
-       VERSION: 0.4.0
+       VERSION: 1.0
 
        CREATED: Thu 14 May 2020 16:27:24
 
-      REVISION: fre  8 apr 2022 18:12:12
+      REVISION: fre  8 apr 2022 18:44:23
 
        LICENSE: Copyright (c) 2019-2022 Johan Nylander
 
@@ -274,6 +277,7 @@ use List::MoreUtils qw(all any);
 use Getopt::Long;
 Getopt::Long::Configure("no_ignore_case", "no_auto_abbrev");
 
+my $version                = '1.0';
 my $wrap                   = 60;  # fasta seq line length
 my $missingchardef         = '-'; # default missing data symbol
 my $decimals               = 4;   # default nr of decimals in print
@@ -334,10 +338,11 @@ GetOptions(
     'w|wrap:i'                      => \$wrap,
     'd|decimals:i'                  => \$decimals,
     'tabulate'                      => \$tabulate,
-    'verbose!'                      => \$verbose,
+    'V|Verbose!'                    => \$verbose,
     'Z'                             => \$Z,
-    'h'    => sub { print "Usage: $0 [OPTIONS][--help] file\n"; exit(0); },
-    'help' => sub { exec("perldoc", $0); exit(0); },
+    'v|version' => sub { print "$version\n"; exit(0); },
+    'h'         => sub { print "Usage: $0 [OPTIONS][--help] file\n"; exit(0); },
+    'help'      => sub { exec("perldoc", $0); exit(0); },
 ) or
 die ("$0 Error in command line arguments\nUsage: $0 [OPTIONS][--help] file\n");
 

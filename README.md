@@ -111,9 +111,12 @@ See below for description.
                   -i, --replace-inner=<char>
                       Replace all inner missing symbols with <char> in sequences.
 
-                  -v, --verbose
+                  -V, --Verbose
                       Print warnings when replacements are attempted on empty
                       sequences.
+
+                  -v, --version
+                      Print version number.
 
                   -w, --wrap=<nr>
                       Wrap fasta sequence to max length <nr>. Default is 60.
@@ -244,11 +247,11 @@ See below for description.
 
          COMPANY: NRM/NBIS
 
-         VERSION: 0.4.0
+         VERSION: 1.0
 
          CREATED: Thu 14 May 2020 16:27:24
 
-        REVISION: fre  8 apr 2022 18:12:12
+        REVISION: fre  8 apr 2022 18:44:23
 
          LICENSE: Copyright (c) 2019-2022 Johan Nylander
 
@@ -286,7 +289,7 @@ See below for description.
                    where all taxa have gaps, thus preserving the
                    alignment.
 
-          OPTIONS: 
+          OPTIONS:
                    --all
                      Remove all gap characters from the sequences, thus
                      not preserving the alignment.
@@ -313,7 +316,7 @@ See below for description.
 
           CREATED: 02/22/2010 07:12:32 PM CET
 
-         REVISION: fre 15 maj 2020 13:06:49
+         REVISION: fre  8 apr 2022 18:23:59
 
           LICENSE: Copyright (c) 2019-2022 Johan Nylander
 
