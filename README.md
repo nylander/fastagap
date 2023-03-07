@@ -9,7 +9,28 @@ Script for "aligned" fasta format (sequences of same length): `degap_fasta_align
 See below for description.
 
 
-## fastagap
+## Installation
+
+The script `fastagap.pl` requires [perl](https://www.perl.org/) with perl
+module [List::MoreUtils](https://metacpan.org/pod/List::MoreUtils).
+
+On a Debian-based Linux system, the module can be installed using `sudo apt
+install -y liblist-moreutils-perl`.  The script `degap_fasta_alignment.pl` uses
+standarda perl modules, so no extra steps are required.
+
+The script `fastagap.pl` can also be installed (as `fastagap`) using
+[conda](https://docs.conda.io/en/latest/) from the [bioconda
+channel](https://bioconda.github.io/).
+
+    $ conda install -c bioconda fastagap
+
+
+
+## Usage
+
+
+
+### fastagap
 
             FILE: fastagap.pl
 
@@ -278,7 +299,7 @@ See below for description.
 
 ---
 
-## degap\_fasta\_alignment
+### degap\_fasta\_alignment
 
              FILE: degap_fasta_alignment.pl
 
