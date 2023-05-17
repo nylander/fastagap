@@ -105,7 +105,7 @@ For installation, see instructions on <https://cran.r-project.org/>.
                       <number> (in percentage). That is, allow 1 - <number>
                       percent missing data.
 
-                  -PL, --remove-leaingp=<number>
+                  -PL, --remove-leadingp=<number>
                       Remove sequence if total amount of leading missing data
                       exceeds <number> percent.
 
@@ -260,13 +260,12 @@ For installation, see instructions on <https://cran.r-project.org/>.
                   They are also removed implicitly, along with "all-gaps" 
                   sequences, when using, e.g., '-A' ('--remove-all)'.
 
-                  To get tab-separated output instead of fasta, use '-tabulate'.
+                  To get tab-separated output instead of fasta, use '--tabulate'.
 
                   To get an easy view of the table output in a terminal window,
                   one could be helped by the program 'column':
 
                       $ ./fastagap.pl -c data/missing.fasta | column -t
-
 
 ---
 

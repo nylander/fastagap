@@ -74,7 +74,7 @@
                     <number> (in percentage). That is, allow 1 - <number>
                     percent missing data.
 
-                -PL, --remove-leaingp=<number>
+                -PL, --remove-leadingp=<number>
                     Remove sequence if total amount of leading missing data
                     exceeds <number> percent.
 
@@ -229,7 +229,7 @@
                 They are also removed implicitly, along with "all-gaps" 
                 sequences, when using, e.g., '-A' ('--remove-all)'.
 
-                To get tab-separated output instead of fasta, use '-tabulate'.
+                To get tab-separated output instead of fasta, use '--tabulate'.
 
                 To get an easy view of the table output in a terminal window,
                 one could be helped by the program 'column':
@@ -246,7 +246,7 @@
 
       REVISION: fre  8 apr 2022 18:44:23
 
-       LICENSE: Copyright (c) 2019-2022 Johan Nylander
+       LICENSE: Copyright (c) 2019-2023 Johan Nylander
 
                 Permission is hereby granted, free of charge, to any person
                 obtaining a copy of this software and associated documentation
