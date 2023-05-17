@@ -325,5 +325,5 @@ samples in your current working directory):
     $ plot_missing_data.R counts.tsv
 
 
-![Heatmap showing missing data per sample for 352 loci.](img/counts.tsv.missing_data.pdf)
+![Heatmap showing missing data per sample for 352 loci.](img/counts.tsv.missing_data.png)
 
