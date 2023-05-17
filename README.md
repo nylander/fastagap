@@ -1,22 +1,26 @@
 # Fastagap - Report, remove, or replace missing data in fasta
 
+## Description
+
 Scripts for handling missing data (gaps) in fasta files.
 
-General script: `fastagap.pl`
+- [`fastagap.pl`](#fastagap) General script for counting, removing, or replacing missing data in fasta formatted files.
 
-Script for "aligned" fasta format (sequences of same length): `degap_fasta_alignment.pl`.
+- [`degap_fasta_alignment.pl`](#degap\_fasta\_alignment) Script for handling "aligned" fasta format (sequences of same length).
+
+- [`plot_missing_data.R`](#plot\_missing\_data) Script for plotting a heatmap of the output from `fastagap.pl -c -H *.fas`.
 
 See below for description.
 
 
 ## Installation
 
-The script `fastagap.pl` requires [perl](https://www.perl.org/) with perl
+The script [`fastagap.pl`](#fastagap) requires [perl](https://www.perl.org/) with perl
 module [List::MoreUtils](https://metacpan.org/pod/List::MoreUtils).
 
 On a Debian-based Linux system, the module can be installed using `sudo apt
 install -y liblist-moreutils-perl`.  The script `degap_fasta_alignment.pl` uses
-standarda perl modules, so no extra steps are required.
+standard perl modules, so no extra steps are required.
 
 The script `fastagap.pl` can also be installed (as `fastagap`) using
 [conda](https://docs.conda.io/en/latest/) from the [bioconda
@@ -24,11 +28,10 @@ channel](https://bioconda.github.io/).
 
     $ conda install -c bioconda fastagap
 
-
+The script `plot_missing_data.R` requires `R` with R-packages `ggplot2`, `tidyr`.
+For installation, see instructions on <https://cran.r-project.org/>.
 
 ## Usage
-
-
 
 ### fastagap
 
@@ -264,38 +267,6 @@ channel](https://bioconda.github.io/).
 
                       $ ./fastagap.pl -c data/missing.fasta | column -t
 
-          AUTHOR: Johan Nylander
-
-         COMPANY: NRM/NBIS
-
-         VERSION: 1.0
-
-         CREATED: Thu 14 May 2020 16:27:24
-
-        REVISION: fre  8 apr 2022 18:44:23
-
-         LICENSE: Copyright (c) 2019-2022 Johan Nylander
-
-                  Permission is hereby granted, free of charge, to any person
-                  obtaining a copy of this software and associated documentation
-                  files (the "Software"), to deal in the Software without
-                  restriction, including without limitation the rights to use,
-                  copy, modify, merge, publish, distribute, sublicense, and/or
-                  sell copies of the Software, and to permit persons to whom the
-                  Software is furnished to do so, subject to the following
-                  conditions:
-
-                  The above copyright notice and this permission notice shall be
-                  included in all copies or substantial portions of the Software.
-
-                  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-                  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-                  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-                  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-                  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-                  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-                  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-                  OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
@@ -325,40 +296,34 @@ channel](https://bioconda.github.io/).
                    --outfile=<file>
                      Print to <file>. Default is to print to STDOUT.
 
-     REQUIREMENTS: ---
+---
 
-            NOTES: This version reads one file only.
+### plot\_missing\_data
 
-           AUTHOR: Johan Nylander (JN), johan.nylander@nrm.se
+             FILE: plot_missing_data.R
 
-          COMPANY: NBIS/NRM
+            USAGE: ./plot_missing_data.R [-h[--help] infile.tsv
 
-          VERSION: 2.0
+      DESCRIPTION: Plots a heatmap showing amounts of missing data
+                   per locus.
 
-          CREATED: 02/22/2010 07:12:32 PM CET
+           OUTPUT: Heatmap-figure in PDF fomat with file ending `.missing_data.pdf`
 
-         REVISION: fre  8 apr 2022 18:23:59
+          OPTIONS:
+                   -h,--help Show help text
 
-          LICENSE: Copyright (c) 2019-2022 Johan Nylander
 
-                   Permission is hereby granted, free of charge, to any person
-                   obtaining a copy of this software and associated documentation
-                   files (the "Software"), to deal in the Software without
-                   restriction, including without limitation the rights to use,
-                   copy, modify, merge, publish, distribute, sublicense, and/or
-                   sell copies of the Software, and to permit persons to whom the
-                   Software is furnished to do so, subject to the following
-                   conditions:
+The script `fastagap.pl` can be used on several input files containing, e.g.,
+different genes for the same samples. To summarize the "completeness", or
+amount of missing data for each sample, a heatmap can be useful (see
+Figure below).
 
-                   The above copyright notice and this permission notice shall be
-                   included in all copies or substantial portions of the Software.
+Procedure (given that you have many `.fas` files for more or less the same
+samples in your current working directory):
 
-                   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-                   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-                   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-                   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-                   HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-                   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-                   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-                   OTHER DEALINGS IN THE SOFTWARE.
+    $ fastagap.pl -c -H *.fas > counts.tsv
+    $ plot_missing_data.R counts.tsv
+
+
+![Heatmap showing missing data per sample for 352 loci.](img/counts.tsv.missing_data.pdf)
 
