@@ -1,7 +1,7 @@
 #!/usr/bin/env -S Rscript
 
-# Plot heatmap from the output of 'fastagap.pl -c -H'
-# Last modified: ons maj 17, 2023  04:08
+# Plot heatmap from the output of 'fastagap.pl -c -H *.fas'
+# Last modified: ons maj 24, 2023  03:18
 # Sign: JN
 # Thanks to: Martin Sköld for code solutions.
 # Source: https://github.com/nylander/fastagap
@@ -11,10 +11,9 @@ columns <- c(1, 4, 13)
 column_names <- c("sample", "ratio", "locus")
 low_col <- "darkblue"
 high_col <- "white"
-break_lims <- c(0, 0.25, 0.5, 0.75, 1)
 cex <- 0.9
 plot_width <- 15
-plot_height <-10
+plot_height <- 10
 
 packages <- c("ggplot2", "tidyr")
 package.check <- lapply(
@@ -44,36 +43,36 @@ if ("-h" %in% args || "--help" %in% args) {
 infile <- args[1]
 outfile <- paste0(basename(infile), ".missing_data.pdf")
 
-cat("Reading file ", infile, "... ", sep="")
+cat("Reading file ", infile, "... ", sep = "")
 
-df <- read.table(infile, header=FALSE)[, columns]
-
+df <- read.table(infile, header = FALSE)[, columns]
 colnames(df) <- column_names
+df$locus <- as.character(df$locus)
 
-df <- tidyr::complete(data=df, locus, sample, fill=list(ratio=1))
+df <- tidyr::complete(data = df, locus, sample, fill = list(ratio = 1))
 
-pdf(outfile, width=plot_width, height=plot_height)
+pdf(outfile, width = plot_width, height = plot_height)
 
-ggplot2::ggplot(data=df,
-                aes(x=locus, y=sample, fill=ratio)) +
+ggplot2::ggplot(data = df,
+                aes(x = locus, y = sample, fill = ratio)) +
     ggplot2::geom_tile() +
     ggplot2::scale_fill_gradient('Missing',
-                                 limits=c(0, 1),
-                                 breaks = break_lims,
+                                 limits = c(0, 1),
                                  low = low_col,
                                  high = high_col) +
-    ggplot2::theme(axis.text.x=element_blank(),
-                   axis.ticks.x=element_blank(),
-                   axis.text.y=element_text(size=rel(cex))) +
-    ggplot2::labs(x="Locus",
-                  y="Sample name")
+    ggplot2::theme(axis.text.x = element_blank(),
+                   axis.ticks.x = element_blank(),
+                   axis.text.y = element_text(size = rel(cex))) +
+    ggplot2::labs(x = "Locus",
+                  y = "Sample name")
 
 invisible(dev.off())
 
 if (file.exists(outfile)) {
-    cat("done.\nCheck output file: ", outfile, "\n", sep="")
+    cat("done.\nCheck output file: ", outfile, "\n", sep = "")
 } else {
     stop("Error: could not write outfile\n")
 }
 
-q(status=0)
+q(status = 0)
+
