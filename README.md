@@ -12,7 +12,6 @@ Scripts for handling missing data (gaps) in fasta files.
 
 See below for description.
 
-
 ## Installation
 
 The script [`fastagap.pl`](#fastagap) requires [perl](https://www.perl.org/) with perl
@@ -161,6 +160,11 @@ For installation, see instructions on <https://cran.r-project.org/>.
                   --tabulate
                       Print tab-separated output (header tab sequence).
 
+                  -uc
+                    Convert sequence to uppercase. Note that the conversion
+                    is done before applying any (case sensitive)
+                    removal/replacements.
+
                   -Z
                       Shortcut for '-A -N -Q -G -X --noverbose'.
 
@@ -217,6 +221,10 @@ For installation, see instructions on <https://cran.r-project.org/>.
                   missing data exceeds 30 percent
 
                       $ ./fastagap.pl -PLT=30 data/missing.fasta
+
+                  Convert input sequence to uppercase before removal
+
+                      $ ./fastagap.pl -uc -N data/missing.fasta
 
                   Remove sequence if (unfiltered) length is less than
                   5 positions

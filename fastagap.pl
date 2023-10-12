@@ -130,6 +130,11 @@
                 --tabulate
                     Print tab-separated output (header tab sequence).
 
+                -uc
+                    Convert sequence to uppercase. Note that the conversion
+                    is done before applying any (case sensitive)
+                    removal/replacements.
+
                 -Z
                     Shortcut for '-A -N -Q -G -X --noverbose'.
 
@@ -187,6 +192,10 @@
 
                     $ ./fastagap.pl -PLT=30 data/missing.fasta
 
+                Convert input sequence to uppercase before removal
+
+                    $ ./fastagap.pl -uc -N data/missing.fasta
+
                 Remove sequence if (unfiltered) length is less than
                 5 positions
 
@@ -197,7 +206,7 @@
 
                     $ ./fastagap.pl -MIN=5 -MAX=10 data/length.fasta
 
-                Convert fasta to tab-separated output
+                Print (filtered) output as tab-separated
 
                     $ ./fastagap.pl -tabulate data/missing.fasta
 
@@ -240,11 +249,11 @@
 
        COMPANY: NRM/NBIS
 
-       VERSION: 1.0
+       VERSION: 1.0.1
 
        CREATED: Thu 14 May 2020 16:27:24
 
-      REVISION: fre  8 apr 2022 18:44:23
+      REVISION: tor 12 okt 2023 13:10:02
 
        LICENSE: Copyright (c) 2019-2023 Johan Nylander
 
@@ -277,7 +286,7 @@ use List::MoreUtils qw(all any);
 use Getopt::Long;
 Getopt::Long::Configure("no_ignore_case", "no_auto_abbrev");
 
-my $version                = '1.0';
+my $version                = '1.0.1';
 my $wrap                   = 60;  # fasta seq line length
 my $missingchardef         = '-'; # default missing data symbol
 my $decimals               = 4;   # default nr of decimals in print
@@ -310,6 +319,7 @@ my $noheader               = 0;
 my $verbose                = 0;
 my $tabulate               = 0;
 my $term                   = $/;
+my $uc                     = 0;
 
 GetOptions(
     'c|count'                       => \$count,
@@ -338,6 +348,7 @@ GetOptions(
     'w|wrap:i'                      => \$wrap,
     'd|decimals:i'                  => \$decimals,
     'tabulate'                      => \$tabulate,
+    'uc'                            => \$uc,
     'V|Verbose!'                    => \$verbose,
     'Z'                             => \$Z,
     'v|version' => sub { print "$version\n"; exit(0); },
@@ -433,7 +444,12 @@ while (my $file = shift(@ARGV)) {
         ($header, @sequencelines) = split /\n/;
 
         foreach my $line (@sequencelines) {
-            $sequence .= $line;
+            if ($uc) {
+                $sequence .= uc($line);
+            }
+            else {
+                $sequence .= $line;
+            }
         }
 
         if ($min || $max) { # if MIN and/or MAX args, don't filter
@@ -463,6 +479,9 @@ while (my $file = shift(@ARGV)) {
                 }
             }
             if ($do_length_print) {
+                if ($uc) {
+                    $sequence = uc($sequence);
+                }
                 if ($tabulate) {
                     print STDOUT $header, "\t", $sequence, "\n";
                 }
