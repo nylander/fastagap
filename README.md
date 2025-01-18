@@ -275,8 +275,6 @@ For installation, see instructions on <https://cran.r-project.org/>.
 
                       $ ./fastagap.pl -c data/missing.fasta | column -t
 
----
-
 ### degap\_fasta\_alignment
 
              FILE: degap_fasta_alignment.pl
@@ -303,8 +301,6 @@ For installation, see instructions on <https://cran.r-project.org/>.
                    --outfile=<file>
                      Print to <file>. Default is to print to STDOUT.
 
----
-
 ### plot\_missing\_data
 
              FILE: plot_missing_data.R
@@ -319,18 +315,34 @@ For installation, see instructions on <https://cran.r-project.org/>.
           OPTIONS:
                    -h,--help Show help text
 
+## Summary counts for many files
 
 The script `fastagap.pl` can be used on several input files containing, e.g.,
-different genes for the same samples. To summarize the "completeness", or
-amount of missing data for each sample, a heatmap can be useful (see
-Figure below).
+different genes for the same samples (fasta headers):
 
-Procedure (given that you have many `.fas` files for more or less the same
-samples in your current working directory):
+    $ fastagap.pl -c -H *.fas
+
+This output can be summarized in different ways. For example, say that you have
+a number of separate gene files with a varying number of sequences, a quick
+count of genes per taxon (fasta header) can be given by (using GNU awk):
+
+    $ fastagap.pl -c -H *.fas | \
+        awk 'BEGIN{printf("label\tcount\t%\n")}
+             {L[$1]++;F[$NF]++}
+             END{for(l in L){printf("%s\t%s\t%s\n",l,L[l],L[l]/length(F))}}'
+
+Similarly, to count the number of taxa (fasta labels) per gene:
+
+    $ fastagap.pl -c -H *.fas | \
+        awk 'BEGIN{printf("file\tcount\t%\n")}
+        {L[$1]++;F[$NF]++}
+        END{for(f in F){printf("%s\t%d\t%.2f\n",f,F[f],F[f]/length(L))}}'
+
+Furthermore, to get a visual image of the  "completeness", or amount of missing
+data for each sample, a heatmap can be useful (see Fig. 1):
 
     $ fastagap.pl -c -H *.fas > counts.tsv
     $ plot_missing_data.R counts.tsv
-
 
 ![Heatmap showing missing data per sample for 352 loci.](img/counts.tsv.missing_data.png)
 
